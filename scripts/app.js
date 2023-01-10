@@ -1,29 +1,48 @@
 let allTasks = [];
-let valueInput = '';
-let input = null;
+let valueAddInput = '';
+let valueEditInput = '';
+let inputAdd = null;
+let inputEdit = null;
 let activeEditIndex = -1;
 
 window.onload = function init() {
-  input = document.getElementById('add-task-input');
-  input.addEventListener('change', updateValue);
+  inputAdd = document.getElementById('add-task-input');
+  inputAdd.addEventListener('change', updateAddValue);
+
+  inputEdit = document.getElementById('edit-task-input');
+  inputEdit.addEventListener('change', updateEditValue);
 }
 
 addItem = () => {
   allTasks.push({
-    text: valueInput,
+    text: valueAddInput,
     isCompleted: false
   });
   clearInput();
   render();
 }
 
-updateValue = (event) => {
-  valueInput = event.target.value;
+editItem = () => {
+  allTasks[activeEditIndex] = {
+    text: valueEditInput,
+    isCompleted: allTasks[activeEditIndex].isCompleted
+  };
+  hideModal();
+  render();
+  activeEditIndex = -1;
+}
+
+updateAddValue = (event) => {
+  valueAddInput = event.target.value;
+}
+
+updateEditValue = (event) => {
+  valueEditInput = event.target.value;
 }
 
 clearInput = () => {
-  valueInput = '';
-  input.value = '';
+  valueAddInput = '';
+  inputAdd.value = '';
 }
 
 clearAll = () => {
@@ -31,16 +50,19 @@ clearAll = () => {
   render();
 }
 
-sortItems = () => {
-  allTasks.sort((x, y) => x.isCompleted === y.isCompleted ? 0 : x.isCompleted ? 1 : -1);
-  render();
-}
+hideModal = () => document.getElementById('modal').style.display = 'none';
+
+showModal = () => document.getElementById('modal').style.display = 'flex';
+
+sortItems = () => allTasks.sort((x, y) => x.isCompleted === y.isCompleted ? 0 : x.isCompleted ? 1 : -1);
 
 render = () => {
   const content = document.getElementById('content-page');
   while (content.firstChild) {
     content.removeChild(content.firstChild);
   }
+
+  sortItems();
 
   allTasks.map((item, index) => {
     const container = document.createElement('div');
@@ -61,22 +83,6 @@ render = () => {
     text.id = `task-text-${index}`;
     text.className = item.isCompleted ? 'task-container__text-task done' : 'task-container__text-task';
 
-    const taskTextInput = document.createElement('input');
-    taskTextInput.id = `task-edit-${index}`;
-    taskTextInput.className = 'task-container__task-edit input';
-    taskTextInput.type = 'text';
-    taskTextInput.style.display = 'none';
-    taskTextInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        allTasks[activeEditIndex] = {
-          text: taskTextInput.value,
-          isCompleted: false
-        }
-        render();
-        activeEditIndex = -1;
-      }
-    })
-
     const imageEdit = document.createElement('img');
     imageEdit.id = `task-image-edit-${index}`;
     imageEdit.src = 'images/edit.svg';
@@ -92,11 +98,10 @@ render = () => {
         if (activeEditIndex !== index) {
           activeEditIndex = index;
 
-          const taskText = document.getElementById(`task-text-${index}`);
-          taskText.style.display = 'none';
+          const editTaskInput = document.getElementById('edit-task-input');
+          editTaskInput.value = allTasks[index].text;
 
-          const taskEdit = document.getElementById(`task-edit-${index}`);
-          taskEdit.style.display = 'initial';
+          showModal();
         }
       }
     })
@@ -113,8 +118,7 @@ render = () => {
 
     container.appendChild(checkbox);
     container.appendChild(text);
-    container.appendChild(taskTextInput);
-    container.appendChild(imageEdit);
+    if (!allTasks[index].isCompleted) container.appendChild(imageEdit);
     container.appendChild(imageDelete);
 
     content.appendChild(container);
