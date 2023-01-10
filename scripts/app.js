@@ -9,22 +9,30 @@ window.onload = function init() {
 }
 
 addItem = () => {
-  allTasks.push({
-    text: inputAdd.value,
-    isCompleted: false
-  });
-  clearInput();
-  render();
+  if (inputAdd.value) {
+    allTasks.push({
+      text: inputAdd.value,
+      isCompleted: false
+    });
+    clearInput();
+    render();
+  } else {
+    emptyTaskAlert();
+  }
 }
 
 editItem = () => {
-  allTasks[activeEditIndex] = {
-    text: inputEdit.value,
-    isCompleted: allTasks[activeEditIndex].isCompleted
-  };
-  hideModal();
-  render();
-  activeEditIndex = -1;
+  if (inputEdit.value) {
+    allTasks[activeEditIndex] = {
+      text: inputEdit.value,
+      isCompleted: allTasks[activeEditIndex].isCompleted
+    };
+    hideModal();
+    render();
+    activeEditIndex = -1;
+  } else {
+    emptyTaskAlert();
+  }
 }
 
 clearInput = () => {
@@ -35,6 +43,8 @@ clearAll = () => {
   allTasks = [];
   render();
 }
+
+emptyTaskAlert = () => alert('Your task is empty');
 
 hideModal = () => document.getElementById('modal').style.display = 'none';
 
