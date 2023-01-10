@@ -1,0 +1,88 @@
+* {
+  font-family: sans-serif;
+  color: white;
+}
+
+.main {
+  width: 700px;
+  margin-inline: auto;
+  background-color: rgb(90, 83, 119);
+  border-radius: 10px;
+}
+
+.main-elements-control {
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.main-elements-control__add-item {
+  display: flex;
+  justify-content: center;
+}
+
+.main-elements-control__title {
+  text-align: center;
+}
+
+#content-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.content-page__task-container {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.task-container__text-task {
+  font-size: 16px;
+  margin-left: 10px;
+}
+
+.done {
+  color: rgba(14, 14, 14, 0.3);
+  text-decoration: line-through;
+}
+
+.content-page__image {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.add-item__btn {
+  background-color: rgb(60, 69, 71);
+  font-size: 16px;
+  height: 32px;
+  padding: 5px;
+  border-style: none;
+  border-radius: 5px;
+  margin-inline: 10px;
+  min-width: 100px;
+  cursor: pointer;
+}
+
+.add-item__btn:hover {
+  background-color: rgb(82, 92, 94);
+}
+
+.input {
+  background-color: rgb(60, 69, 71);
+  border-style: none;
+  border-radius: 5px;
+  padding-inline: 10px;
+  font-size: 16px;
+}
+
+.danger {
+  background-color: rgb(165, 68, 68);
+}
+
+#clear-all-button:hover {
+  background-color: rgb(190, 87, 87);
+}
