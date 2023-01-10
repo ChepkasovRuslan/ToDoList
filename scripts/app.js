@@ -1,21 +1,16 @@
 let allTasks = [];
-let valueAddInput = '';
-let valueEditInput = '';
 let inputAdd = null;
 let inputEdit = null;
 let activeEditIndex = -1;
 
 window.onload = function init() {
   inputAdd = document.getElementById('add-task-input');
-  inputAdd.addEventListener('change', updateAddValue);
-
   inputEdit = document.getElementById('edit-task-input');
-  inputEdit.addEventListener('change', updateEditValue);
 }
 
 addItem = () => {
   allTasks.push({
-    text: valueAddInput,
+    text: inputAdd.value,
     isCompleted: false
   });
   clearInput();
@@ -24,7 +19,7 @@ addItem = () => {
 
 editItem = () => {
   allTasks[activeEditIndex] = {
-    text: valueEditInput,
+    text: inputEdit.value,
     isCompleted: allTasks[activeEditIndex].isCompleted
   };
   hideModal();
@@ -32,16 +27,7 @@ editItem = () => {
   activeEditIndex = -1;
 }
 
-updateAddValue = (event) => {
-  valueAddInput = event.target.value;
-}
-
-updateEditValue = (event) => {
-  valueEditInput = event.target.value;
-}
-
 clearInput = () => {
-  valueAddInput = '';
   inputAdd.value = '';
 }
 
@@ -58,13 +44,12 @@ sortItems = () => allTasks.sort((x, y) => x.isCompleted === y.isCompleted ? 0 : 
 
 render = () => {
   const content = document.getElementById('content-page');
-  while (content.firstChild) {
-    content.removeChild(content.firstChild);
-  }
+
+  content.innerHTML = '';
 
   sortItems();
 
-  allTasks.map((item, index) => {
+  allTasks.forEach((item, index) => {
     const container = document.createElement('div');
     container.id = `task-${index}`;
     container.className = 'content-page__task-container'
@@ -95,14 +80,12 @@ render = () => {
           return;
         }
 
-        if (activeEditIndex !== index) {
-          activeEditIndex = index;
+        activeEditIndex = index;
 
-          const editTaskInput = document.getElementById('edit-task-input');
-          editTaskInput.value = allTasks[index].text;
+        const editTaskInput = document.getElementById('edit-task-input');
+        editTaskInput.value = allTasks[index].text;
 
-          showModal();
-        }
+        showModal();
       }
     })
 
