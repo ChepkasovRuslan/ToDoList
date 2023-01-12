@@ -1,35 +1,49 @@
+const URL = 'http://localhost:8000/';
+
 let allTasks = [];
 let inputAdd = null;
 let inputEdit = null;
 let activeEditIndex = -1;
 
-window.onload = function init() {
+window.onload = async function init() {
   inputAdd = document.getElementById('add-task-input');
   inputEdit = document.getElementById('edit-task-input');
+
+  render();
 }
 
-addItem = () => {
-  if (inputAdd.value) {
-    allTasks.push({
-      text: inputAdd.value,
-      isCompleted: false
+getAllItems = async () => {
+  try {
+    const response = await fetch(URL + 'tasks', {
+      method: 'GET',
     });
-    clearInput();
-    render();
-  } else {
-    emptyTaskAlert();
+    const result = await response.json();
+
+    return result;
+  } catch (error) {
+    console.log(error);
+    return [];
   }
 }
 
-editItem = () => {
-  if (inputEdit.value) {
-    allTasks[activeEditIndex] = {
-      text: inputEdit.value,
-      isCompleted: allTasks[activeEditIndex].isCompleted
-    };
-    hideModal();
-    render();
-    activeEditIndex = -1;
+addItem = async () => {
+  if (inputAdd.value) {
+    try {
+      await fetch(URL + 'tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({
+          text: inputAdd.value,
+          isCompleted: false
+        })
+      });
+      clearInput();
+      await render();
+    } catch (error) {
+      console.log(error);
+    }
   } else {
     emptyTaskAlert();
   }
@@ -39,8 +53,71 @@ clearInput = () => {
   inputAdd.value = '';
 }
 
-clearAll = () => {
-  allTasks = [];
+deleteItem = async (index) => {
+  try {
+    await fetch(URL + 'tasks/' + allTasks[index]._id, {
+      method: 'DELETE',
+    });
+    clearInput();
+    await render();
+  } catch (error) {
+    console.log(error);
+  }
+
+  render();
+  activeEditIndex = -1;
+}
+
+deleteAll = async () => {
+  try {
+    await fetch(URL + 'tasks', {
+      method: 'DELETE',
+    });
+    clearInput();
+    await render();
+  } catch (error) {
+    console.log(error);
+  }
+
+  render();
+}
+
+changeText = async () => {
+  try {
+    if (inputEdit.value) {
+      await fetch(URL + 'tasks/text/' + allTasks[activeEditIndex]._id, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({
+          text: inputEdit.value,
+        })
+      });
+      hideModal();
+      await render();
+      activeEditIndex = -1;
+    } else {
+      emptyTaskAlert();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  render();
+}
+
+changeCompleted = async (index) => {
+  try {
+    await fetch(URL + 'tasks/completed/' + allTasks[index]._id, {
+      method: 'PATCH',
+    });
+    clearInput();
+    await render();
+  } catch (error) {
+    console.log(error);
+  }
+
   render();
 }
 
@@ -52,7 +129,18 @@ showModal = () => document.getElementById('modal').style.display = 'flex';
 
 sortItems = () => allTasks.sort((x, y) => x.isCompleted === y.isCompleted ? 0 : x.isCompleted ? 1 : -1);
 
-render = () => {
+openEdit = (index) => {
+  activeEditIndex = index;
+
+  const editTaskInput = document.getElementById('edit-task-input');
+  editTaskInput.value = allTasks[activeEditIndex].text;
+
+  showModal();
+}
+
+render = async () => {
+  allTasks = await getAllItems();
+
   const content = document.getElementById('content-page');
 
   content.innerHTML = '';
@@ -68,10 +156,7 @@ render = () => {
     checkbox.id = `task-checkbox-${index}`;
     checkbox.type = 'checkbox';
     checkbox.checked = item.isCompleted;
-    checkbox.onchange = () => {
-      allTasks[index].isCompleted = !allTasks[index].isCompleted;
-      render();
-    }
+    checkbox.onchange = async () => await changeCompleted(index);
 
     const text = document.createElement('p');
     text.innerText = item.text;
@@ -82,38 +167,18 @@ render = () => {
     imageEdit.id = `task-image-edit-${index}`;
     imageEdit.src = 'images/edit.svg';
     imageEdit.className = 'content-page__image';
-    imageEdit.addEventListener('click', () => {
-      if (!allTasks[index].isCompleted) {
-        if (activeEditIndex === index) {
-          render();
-          activeEditIndex = -1;
-          return;
-        }
-
-        activeEditIndex = index;
-
-        const editTaskInput = document.getElementById('edit-task-input');
-        editTaskInput.value = allTasks[index].text;
-
-        showModal();
-      }
-    })
+    imageEdit.addEventListener('click', () => openEdit(index))
 
     const imageDelete = document.createElement('img');
     imageDelete.id = `task-image-delete-${index}`;
     imageDelete.src = 'images/delete.svg';
     imageDelete.className = 'content-page__image';
-    imageDelete.addEventListener('click', () => {
-      allTasks.splice(index, 1);
-      render();
-      activeEditIndex = -1;
-    })
+    imageDelete.addEventListener('click', async () => await deleteItem(index));
 
     container.appendChild(checkbox);
     container.appendChild(text);
     if (!allTasks[index].isCompleted) container.appendChild(imageEdit);
     container.appendChild(imageDelete);
-
     content.appendChild(container);
   });
 }
