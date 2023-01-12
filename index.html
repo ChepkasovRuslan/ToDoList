@@ -15,7 +15,7 @@
       <div class="modal__edit-task-container">
         <input type="text" id="edit-task-input" class="edit-task-container__edit-task-input input">
         <div class="edit-task-container__options-buttons">
-          <button id="apply-edit-button" class="btn input" onclick="editItem()">Edit</button>
+          <button id="apply-edit-button" class="btn input" onclick="changeText()">Edit</button>
           <button id="cancel-edit-button" class="btn input" onclick="hideModal()">Cancel</button>
         </div>
       </div>
@@ -27,7 +27,7 @@
         <input type="text" id="add-task-input" class="add-item__input input" placeholder="Enter your task here"
           autofocus>
         <button id="add-task-button" class="add-item__btn btn input" onclick="addItem()">Add</button>
-        <button id="clear-all-button" class="add-item__btn btn input danger" onclick="clearAll()">Clear All</button>
+        <button id="clear-all-button" class="add-item__btn btn input danger" onclick="deleteAll()">Clear All</button>
       </div>
     </div>
 
