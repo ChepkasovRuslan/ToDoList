@@ -1,4 +1,6 @@
-let allTasks = [];
+const TASKS_KEY = 'tasks';
+
+let allTasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let inputAdd = null;
 let inputEdit = null;
 let activeEditIndex = -1;
@@ -6,6 +8,8 @@ let activeEditIndex = -1;
 window.onload = function init() {
   inputAdd = document.getElementById('add-task-input');
   inputEdit = document.getElementById('edit-task-input');
+
+  render();
 }
 
 addItem = () => {
@@ -51,6 +55,8 @@ hideModal = () => document.getElementById('modal').style.display = 'none';
 showModal = () => document.getElementById('modal').style.display = 'flex';
 
 sortItems = () => allTasks.sort((x, y) => x.isCompleted === y.isCompleted ? 0 : x.isCompleted ? 1 : -1);
+
+updateLocalStorage = () => localStorage.setItem(TASKS_KEY, JSON.stringify(allTasks));
 
 render = () => {
   const content = document.getElementById('content-page');
@@ -116,4 +122,6 @@ render = () => {
 
     content.appendChild(container);
   });
+
+  updateLocalStorage();
 }
